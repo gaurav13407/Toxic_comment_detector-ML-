@@ -23,4 +23,11 @@ tensorflow
 google-api-python-client
 praw
 instaloader
+openai
+langchain-community
+langchain
+langchain-text-splitters
+gensim
+youtube-comment-downloader
+snscrape
 ##-e .

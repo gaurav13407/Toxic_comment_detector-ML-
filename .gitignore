@@ -1,0 +1,47 @@
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files - excluded due to size limits (train your own using notebooks)
+output/models/*.joblib
+output/models/*.model
+output/models/*.npy
+output/models/embeddings.npy
+output/models/word2vec_model.model*
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
