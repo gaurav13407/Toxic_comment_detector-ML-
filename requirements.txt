@@ -1,0 +1,26 @@
+python-dotenv
+pymongo
+pymongo[srv]
+ipykernel
+numpy
+pandas
+matplotlib
+seaborn
+bs4
+flask
+scikit-learn
+memory_profiler
+streamlit
+xgboost
+catboost
+dill
+certifi
+pyaml
+tensorboard
+tensorflow-datasets
+keras
+tensorflow
+google-api-python-client
+praw
+instaloader
+##-e .
