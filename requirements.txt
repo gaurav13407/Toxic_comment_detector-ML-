@@ -30,4 +30,9 @@ langchain-text-splitters
 gensim
 youtube-comment-downloader
 snscrape
+nltk
+youtube_comment_downloader
+praw
+gensim
+# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 ##-e .

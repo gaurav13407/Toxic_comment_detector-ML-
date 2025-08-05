@@ -1,7 +1,7 @@
 {
-  "model_name": "Random Forest (Medium)",
-  "accuracy": 0.8972593113141251,
-  "training_date": "2025-07-24T14:58:13.364325",
+  "model_name": "Random Forest (Fast)",
+  "accuracy": 0.895319747013352,
+  "training_date": "2025-08-05T22:24:31.704047",
   "vector_size": 300,
   "vocabulary_size": 93433,
   "training_samples": 142300,
@@ -14,7 +14,7 @@
     "insult",
     "identity_hate"
   ],
-  "model_file": "toxic_comment_classifier_random_forest_medium.joblib",
+  "model_file": "toxic_comment_classifier_random_forest_fast.joblib",
   "word2vec_model": "word2vec_model.model",
   "embeddings_file": "embeddings.npy"
 }

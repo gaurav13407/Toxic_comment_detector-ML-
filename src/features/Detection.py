@@ -12,7 +12,7 @@ project_root = os.path.join(current_dir, '..', '..')
 models_dir = os.path.join(project_root, 'output', 'models')
 
 ## Load model and embedder
-model = joblib.load(os.path.join(models_dir, 'toxic_comment_classifier_random_forest_medium.joblib'))
+model = joblib.load(os.path.join(models_dir, 'toxic_comment_classifier_random_forest_fast.joblib'))
 
 ## Load Word2Vec Model
 w2v_model = Word2Vec.load(os.path.join(models_dir, 'word2vec_model.model'))
