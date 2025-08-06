@@ -1,21 +1,49 @@
-import joblib
 import numpy as np
 import re
 import pandas as pd
-from gensim.models import Word2Vec
-from gensim.utils import simple_preprocess
 import os
+
+# Make imports optional
+try:
+    import joblib
+    JOBLIB_AVAILABLE = True
+except ImportError:
+    JOBLIB_AVAILABLE = False
+    print("Warning: joblib not available")
+
+try:
+    from gensim.models import Word2Vec
+    from gensim.utils import simple_preprocess
+    GENSIM_AVAILABLE = True
+except ImportError:
+    GENSIM_AVAILABLE = False
+    print("Warning: gensim not available")
+
+try:
+    from .ModelLoader import model_loader
+    MODEL_LOADER_AVAILABLE = True
+except ImportError:
+    MODEL_LOADER_AVAILABLE = False
+    print("Warning: ModelLoader not available")
 
 # Get the absolute path to the project root
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.join(current_dir, '..', '..')
 models_dir = os.path.join(project_root, 'output', 'models')
 
-## Load model and embedder
-model = joblib.load(os.path.join(models_dir, 'toxic_comment_classifier_random_forest_fast.joblib'))
-
-## Load Word2Vec Model
-w2v_model = Word2Vec.load(os.path.join(models_dir, 'word2vec_model.model'))
+# Legacy support - Load default Random Forest model
+try:
+    if JOBLIB_AVAILABLE and GENSIM_AVAILABLE:
+        model = joblib.load(os.path.join(models_dir, 'toxic_comment_classifier_random_forest_fast.joblib'))
+        w2v_model = Word2Vec.load(os.path.join(models_dir, 'word2vec_model.model'))
+    else:
+        model = None
+        w2v_model = None
+        print("Warning: Random Forest model not loaded due to missing dependencies")
+except Exception as e:
+    model = None
+    w2v_model = None
+    print(f"Warning: Could not load Random Forest model: {e}")
 
 ## Configuration
 VECTOR_SIZE = 300
@@ -170,3 +198,94 @@ def predict_toxicity_batch(comments, sensitivity=0.3):
     
     return results
 
+# New Multi-Model Functions
+def get_available_models():
+    """Get list of available models"""
+    if MODEL_LOADER_AVAILABLE:
+        return model_loader.get_available_models()
+    else:
+        # Return basic models if ModelLoader not available
+        models = []
+        if model is not None:
+            models.append("Random Forest")
+        return models
+
+def get_model_info():
+    """Get information about available models"""
+    if MODEL_LOADER_AVAILABLE:
+        return model_loader.get_model_info()
+    else:
+        # Return basic info if ModelLoader not available
+        info = {}
+        if model is not None:
+            info["Random Forest"] = {
+                "description": "Traditional Random Forest with Word2Vec embeddings",
+                "accuracy": "~85%",
+                "speed": "Very Fast"
+            }
+        return info
+
+def predict_toxicity_with_model(comment, model_name='Random Forest', sensitivity=0.3):
+    """
+    Predict toxicity using specified model
+    
+    Args:
+        comment: Text to analyze
+        model_name: Name of model to use ('Random Forest', 'LSTM', etc.)
+        sensitivity: Detection sensitivity (0.1-0.8)
+    
+    Returns:
+        dict: Prediction results
+    """
+    if MODEL_LOADER_AVAILABLE:
+        return model_loader.predict_toxicity(comment, model_name, sensitivity)
+    else:
+        # Fallback to legacy prediction if available
+        if model is not None and model_name == "Random Forest":
+            return predict_toxicity(comment, sensitivity)
+        else:
+            # Return a safe fallback result
+            return {
+                'comment': comment,
+                'predictions': {label: {'prediction': False, 'probability': 0.0} 
+                              for label in ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']},
+                'is_toxic': False,
+                'toxicity_score': 0.0,
+                'model_used': model_name,
+                'error': 'Model not available - missing dependencies'
+            }
+
+def predict_toxicity_batch_with_model(comments, model_name='Random Forest', sensitivity=0.3):
+    """
+    Batch predict toxicity using specified model
+    
+    Args:
+        comments: List of texts to analyze
+        model_name: Name of model to use
+        sensitivity: Detection sensitivity
+    
+    Returns:
+        List of prediction results
+    """
+    if not comments:
+        return []
+    
+    results = []
+    for comment in comments:
+        try:
+            result = model_loader.predict_toxicity(comment, model_name, sensitivity)
+            results.append(result)
+        except Exception as e:
+            # Fallback result if prediction fails
+            result = {
+                'comment': comment,
+                'predictions': {label: {'prediction': False, 'probability': 0.0} 
+                              for label in ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']},
+                'is_toxic': False,
+                'toxicity_score': 0.0,
+                'model_used': model_name,
+                'error': str(e)
+            }
+            results.append(result)
+    
+    return results
